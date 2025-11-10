@@ -1,0 +1,264 @@
+\chapter{Cadre du projet}
+
+
+
+\section*{Introduction}
+Ce premier chapitre présente le cadre général dans lequel s’inscrit le projet de fin d’études. Il a pour objectif de situer le contexte professionnel, d’exposer la problématique à l’origine du projet et de définir les principaux objectifs poursuivis.  
+Nous aborderons d’abord la présentation de l’organisme d’accueil, DeepShift AI Academy, en mettant en lumière ses domaines d’intervention, ses services et son rôle dans la formation et l’accompagnement des professionnels.  
+Ensuite, nous détaillerons la problématique à laquelle le projet cherche à répondre, avant d’en énoncer les objectifs principaux et spécifiques.  
+Une revue de l’état de l’art sera également présentée afin de situer le projet dans le contexte actuel de l’intégration de l’intelligence artificielle dans les workflows automatisés.  
+Enfin, la méthodologie de travail adoptée, notamment la méthode Scrum, sera exposée pour illustrer la démarche de gestion du projet depuis sa conception jusqu’à sa mise en œuvre.
+
+
+\section{Présentation de l'organisme d'accueil}
+
+\subsection{Présentation générale}
+Deep-Shift AI Academy est une jeune start-up fondée en novembre 2024, présente à Paris et à Tunis. Elle réunit une équipe d’une vingtaine d’ingénieurs, de consultants et de stagiaires, passionnés par l’intelligence artificielle et les technologies émergentes.  
+La mission principale de l’entreprise est d’aider les organisations à adopter rapidement et efficacement l’intelligence artificielle générative (Gen AI) à travers des formations, du conseil et des services d’ingénierie.
+
+Les valeurs fondatrices de Deep-Shift AI Academy reposent sur la curiosité, l’innovation, la qualité, la convivialité et la transmission du savoir. L’entreprise valorise l’excellence, la proximité avec ses clients et un accompagnement humain dans la transformation numérique.  
+Ses activités s’articulent autour de l’efficacité, la créativité et la recherche de résultats concrets pour les entreprises clientes.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.8]{logo/logo-deepshift-ai.png}
+        \caption{Logo de Deep-Shift AI Academy}
+    \end{figure}
+
+    
+\subsection{Offre de services et domaines d’intervention}
+La proposition de valeur de Deep-Shift AI Academy vise à permettre aux entreprises d’atteindre le plein potentiel de l’intelligence artificielle générative. Elle s’articule autour de quatre volets complémentaires :
+\begin{itemize}
+    \item \textbf{Formations et sensibilisation} : programmes personnalisés adaptés à différents publics, allant de l’initiation à des formations avancées avec travaux pratiques.  
+    \item \textbf{Consulting stratégique} : accompagnement des entreprises dans la cartographie et la priorisation des cas d’usage, la définition de stratégies de données, techniques, organisationnelles et RH.  
+    \item \textbf{Ingénierie et implémentation technique} : conception de solutions concrètes intégrant les modèles de langage (LLM), le fine-tuning, la création de plateformes IA, le développement d’applications et la maintenance.  
+    \item \textbf{Gestion du changement et accompagnement humain} : aide à l’adoption des solutions IA via la formation du personnel, la conduite du changement et la gestion de projets (PMO).
+\end{itemize}
+
+Les services de Deep-Shift AI Academy couvrent ainsi l’ensemble du cycle de mise en œuvre de l’intelligence artificielle en entreprise : de la réflexion stratégique à l’industrialisation technique.
+
+\subsection{Formation et accompagnement des professionnels}
+Les offres de formation proposées par Deep-Shift AI Academy s’adressent à des publics variés, allant des utilisateurs finaux aux professionnels de secteurs spécialisés :
+\begin{itemize}
+    \item \textbf{Formation d’introduction à l’IA générative (1 jour)} : sensibilisation aux concepts, enjeux et cas d’usage de l’IA générative.  
+    \item \textbf{Formations avancées (3 à 5 jours)} : sessions pratiques comprenant des ateliers, des manipulations de modèles et des exercices d’implémentation.
+\end{itemize}
+
+Les formations s’adaptent à de nombreux domaines professionnels :
+\begin{itemize}
+    \item Création et design : artistes, architectes, designers.  
+    \item Domaines juridiques et administratifs.  
+    \item Gestion de projets et ingénierie logicielle.  
+    \item Génie civil, finance, banque et assurance.  
+    \item Santé et télécommunications.
+\end{itemize}
+
+Ces formations visent à développer la compréhension, la maîtrise et l’intégration des outils d’intelligence artificielle dans les pratiques professionnelles quotidiennes.
+
+\subsection{Rôle et apport de l’intelligence artificielle générative}
+L’intelligence artificielle générative est une technologie capable de produire différents types de contenu (texte, image, audio, vidéo ou données synthétiques).  
+Elle connaît une forte accélération depuis 2019, marquée par le développement des \textit{transformers}, des mécanismes d’attention et la démocratisation des interfaces de création. Cette évolution suit une courbe d’innovation disruptive, offrant un avantage compétitif durable aux entreprises qui l’adoptent tôt.
+
+Deep-Shift AI Academy illustre concrètement les bénéfices de la Gen AI à travers plusieurs démonstrations :
+\begin{itemize}
+    \item \textbf{Dans le processus commercial (avant-vente)} : la génération rapide d’images de concepts architecturaux innovants permet de gagner plusieurs jours dans les phases de présélection et d’améliorer la réactivité face aux clients.  
+    \item \textbf{Dans le processus de conception et de design} : la Gen AI permet d’explorer rapidement de nouveaux styles, de combiner des concepts existants, et de générer en quelques minutes des maquettes 3D exploitables.
+\end{itemize}
+
+Grâce à ces applications concrètes, l’entreprise démontre la valeur stratégique de l’IA générative dans la transformation numérique, en plaçant la créativité et l’efficacité au cœur des processus métiers.  
+Son positionnement se situe ainsi à l’intersection entre la formation, le conseil et l’ingénierie, contribuant à construire des organisations plus innovantes et agiles.
+
+
+
+
+\section{Problématique}
+La gestion manuelle de processus métiers présente plusieurs limites :
+\begin{itemize}
+    \item Risque d’erreurs humaines dans la collecte, le traitement et la transmission des informations.
+    \item Perte de temps liée à l’exécution répétitive de tâches simples.
+    \item Difficulté à assurer la traçabilité et la conformité des projets.
+    \item Manque de réactivité face à des volumes importants de données ou de requêtes.
+\end{itemize}
+
+Face à ces défis, il devient nécessaire de mettre en place des workflows intelligents capables de :
+\begin{enumerate}
+    \item Automatiser la classification et le traitement de documents.
+    \item Faciliter la veille concurrentielle et l’analyse comparative.
+    \item Améliorer la gestion de projets collaboratifs.
+    \item Offrir un support client automatisé via des chatbots.
+\end{enumerate}
+
+\section{Objectifs du projet}
+L’objectif principal de ce projet est de concevoir et d’implémenter plusieurs cas d’usage 
+d’automatisation des workflows en exploitant différents outils (Zapier, Make.com, n8n, Rasa).  
+Les objectifs spécifiques sont :
+\begin{itemize}
+    \item Démontrer l’efficacité de l’automatisation dans divers contextes métiers.
+    \item Comparer l’apport de différentes plateformes en termes de flexibilité et d’intégration.
+    \item Intégrer des fonctionnalités d’intelligence artificielle (IA) pour enrichir les workflows.
+    \item Évaluer les résultats obtenus et proposer des pistes d’amélioration.
+\end{itemize}
+
+\section{État de l’art}
+
+\subsection{Bénéfices de l’intégration de l’IA dans les workflows}
+
+L’intégration de l’intelligence artificielle (IA) dans les processus métiers transforme profondément la manière dont les entreprises automatisent, supervisent et optimisent leurs opérations.  
+Les \textbf{agents intelligents}, en particulier, jouent un rôle central dans cette évolution : ils permettent d’exécuter des tâches autonomes, d’interagir avec des systèmes externes et de prendre des décisions contextuelles à partir des données disponibles.  
+
+\enquote{L'automatisation des workflows consiste, elle, à confier à un logiciel le soin d'exécuter, de coordonner et de contrôler ces séquences de tâches selon des règles prédéfinies. Autrement dit, ce n'est plus un collaborateur qui relance par e-mail, transfère un dossier ou met à jour une base de données, mais un système qui orchestre automatiquement ces actions.[1].}
+
+Cette automatisation constitue la première étape vers une intelligence opérationnelle. En y intégrant des modèles d’IA capables d’analyser, de prioriser et d’optimiser les décisions, l’entreprise passe d’une simple exécution mécanique à une orchestration intelligente des processus.
+
+\enquote{L’un des principaux avantages de l’intégration de l’intelligence artificielle dans les petites et moyennes entreprises réside dans l’augmentation notable de l’efficacité et de la productivité. Les systèmes d’IA réduisent le temps nécessaire à l’exécution des tâches en automatisant les processus répétitifs tels que la saisie de données, la gestion documentaire et les demandes des clients. En traitant ces tâches avec une intervention humaine minimale, l’IA limite les erreurs humaines, améliore la précision et libère les employés afin qu’ils puissent se concentrer sur des activités plus complexes et à plus forte valeur ajoutée[2].}
+
+Cette citation illustre l’un des avantages majeurs de l’automatisation intelligente : la \textbf{réduction du temps de traitement}, la \textbf{diminution des erreurs humaines} et la \textbf{valorisation du travail humain} par un recentrage sur les activités à forte valeur ajoutée.
+
+
+Dans le contexte des PME, où les ressources humaines et financières sont souvent limitées, l’IA devient un levier stratégique pour améliorer la compétitivité et la performance opérationnelle.  
+Les agents IA permettent d’assurer une continuité des opérations, d’automatiser les décisions récurrentes (par exemple, la classification des tickets ou la planification de tâches) et d’améliorer la réactivité face aux besoins clients.
+
+\subsection{Le rôle du \textit{Prompt Engineering}}
+Le développement de systèmes d’agents IA s’appuie fortement sur le \textbf{prompt engineering}, une discipline récente visant à concevoir des instructions textuelles optimisées pour guider les modèles de langage (LLMs) tels que GPT-4, Claude ou Gemini.  
+Un prompt bien structuré permet de :
+\begin{itemize}
+    \item orienter le comportement de l’agent selon le contexte métier ;
+    \item garantir la cohérence des réponses et éviter les hallucinations ;
+    \item générer des sorties structurées (par exemple, en format JSON) pour faciliter l’intégration avec d’autres systèmes automatisés.
+\end{itemize}
+
+Dans les workflows d’entreprise, le prompt engineering agit comme une \textbf{interface cognitive} entre l’utilisateur, les données, et l’action automatisée.  
+Il permet notamment d’assurer la qualité du raisonnement et la fiabilité de l’automatisation, éléments essentiels pour des cas d’usage comme la gestion des tâches, l’analyse de conformité, ou le support technique automatisé.
+
+\subsection{Comparaison approfondie : Make, Zapier et n8n}
+
+Les plateformes d’automatisation de workflows — \textbf{Make}, \textbf{Zapier} et \textbf{n8n} — se distinguent non seulement par leur philosophie d’intégration et leur niveau de personnalisation, mais également par leurs modèles économiques et leur positionnement technique.
+
+\subsubsection*{Modèles de tarification : trois approches distinctes}
+
+Les différences de modèle économique influencent fortement le coût global selon le volume et la complexité des traitements.
+
+\paragraph{n8n : un modèle économique innovant}
+\newline
+n8n adopte une approche singulière :
+\begin{itemize}
+    \item Version \textbf{self-hosted gratuite} avec usage illimité.
+    \item Version \textbf{cloud} à partir de \textdollar22/mois pour 2\,500 exécutions complètes.
+    \item \textbf{Facturation par exécution complète de workflow}, indépendamment du nombre d’étapes.
+\end{itemize}
+Cette approche présente un avantage économique considérable pour les processus traitant de grands volumes de données. Par exemple, un workflow traitant 1\,000 enregistrements ne compte que pour une seule exécution, là où les concurrents factureraient 1\,000 opérations ou tâches.
+
+\paragraph{Make : modèle basé sur les opérations}
+\newline
+Make facture chaque action effectuée par un module comme une \textit{opération}.
+\begin{itemize}
+    \item Version gratuite : 1\,000 opérations/mois.
+    \item Plans payants dès \textdollar9/mois pour 10\,000 opérations.
+\end{itemize}
+Ce modèle offre souvent un rapport coût/fonctionnalité plus avantageux que Zapier, notamment pour les workflows de complexité moyenne.
+
+\paragraph{Zapier : modèle basé sur les tâches}
+\newline
+Zapier facture selon le nombre de \textit{tâches} exécutées :
+\begin{itemize}
+    \item Version gratuite : 100 tâches/mois et 5 Zaps.
+    \item Plans payants dès \textdollar19.99/mois pour 750 tâches.
+\end{itemize}
+Chaque élément de donnée traité correspond à une tâche. Ainsi, un workflow en deux étapes traitant 100 enregistrements consommerait déjà la totalité du quota gratuit. Ce modèle devient rapidement coûteux pour les traitements à grand volume.
+
+\subsubsection*{Forces et faiblesses des plateformes}
+
+\paragraph{n8n : puissance technique et souveraineté des données}
+\newline
+\textbf{Forces :}
+\begin{itemize}
+    \item Hébergement local garantissant le contrôle total des données.
+    \item Flexibilité technique inégalée pour les workflows complexes.
+    \item Tarification avantageuse pour les traitements massifs.
+    \item Intégration avancée avec les technologies d’IA (LangChain, API LLM).
+    \item Extensibilité illimitée via du code personnalisé.
+\end{itemize}
+\textbf{Faiblesses :}
+\begin{itemize}
+    \item Courbe d’apprentissage plus abrupte.
+    \item Catalogue d’intégrations moins vaste.
+    \item Compétences techniques nécessaires pour une utilisation optimale.
+\end{itemize}
+n8n est donc particulièrement adapté aux organisations disposant d’expertise interne et d’exigences fortes en matière de confidentialité et de personnalisation.
+
+\paragraph{Make : un équilibre stratégique}
+\newline
+\textbf{Forces :}
+\begin{itemize}
+    \item Interface visuelle performante pour la conception de workflows complexes.
+    \item Excellent rapport qualité-prix.
+    \item Capacités avancées de transformation et manipulation de données.
+    \item Gestion robuste des erreurs et options de débogage.
+\end{itemize}
+\textbf{Faiblesses :}
+\begin{itemize}
+    \item Moins d’intégrations que Zapier.
+    \item Aucune option d’auto-hébergement.
+    \item Certaines fonctions avancées réservées aux plans supérieurs.
+\end{itemize}
+Make constitue une solution équilibrée, adaptée aux équipes mixtes (techniques et non techniques) recherchant un compromis entre accessibilité et puissance.
+
+\paragraph{Zapier : accessibilité et couverture maximale}
+\newline
+\textbf{Forces :}
+\begin{itemize}
+    \item Interface extrêmement intuitive pour les non-techniciens.
+    \item Plus grand catalogue d’intégrations du marché.
+    \item Documentation complète et support client efficace.
+    \item Large communauté et mise en œuvre rapide d’automatisations simples.
+\end{itemize}
+\textbf{Faiblesses :}
+\begin{itemize}
+    \item Tarification qui augmente rapidement avec le volume.
+    \item Limitations techniques pour les workflows complexes.
+    \item Aucune option d’auto-hébergement.
+    \item Capacités limitées de transformation de données.
+\end{itemize}
+Zapier reste la solution privilégiée pour les équipes non techniques souhaitant automatiser rapidement des processus simples à modérément complexes.
+
+En conclusion, \textbf{Zapier} privilégie l’accessibilité, \textbf{Make} la flexibilité visuelle et \textbf{n8n} la maîtrise technique et la souveraineté des données.  
+Pour des cas d’usage intégrant des agents IA, le caractère \textbf{open source} et la compatibilité native de \textbf{n8n} avec les frameworks d’intelligence artificielle en font la plateforme la plus adaptée à un contexte d’entreprise axé sur l’automatisation intelligente et la scalabilité.
+
+
+
+\printbibliography[heading=subbibintoc]
+
+
+\section{Méthodologie de travail}
+
+\subsection{Méthodologie de SCRUM}
+
+"Scrum est une méthodologie agile de gestion de projet qui repose sur des cycles courts, appelés sprints, et sur la collaboration étroite entre les membres de l’équipe même à distance. L’objectif principal de Scrum agile est de livrer rapidement un produit de qualité, tout en s’adaptant facilement aux changements et aux retours des utilisateurs."[3]
+
+La méthodologie Scrum a été choisie car elle s’adapte parfaitement à la nature évolutive et itérative des projets d’automatisation basés sur l’intelligence artificielle.
+Elle permet de livrer des versions fonctionnelles du workflow à la fin de chaque sprint, tout en intégrant rapidement les retours et améliorations.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.7]{achitectures/scrum.png}
+        \caption{Méthode Scrum}
+    \end{figure}
+
+
+\subsection{Les principaux avantages de la méthodologie Scrum}
+Les principaux avantages de la méthodologie \textbf{Scrum} appliquée à ce projet sont les suivants :
+
+\begin{itemize}
+    \item \textbf{Flexibilité} : les besoins et objectifs peuvent être ajustés au fil des sprints selon les résultats obtenus.
+    \item \textbf{Livraisons incrémentales} : chaque sprint produit un livrable concret (un workflow ou un use case fonctionnel).
+    \item \textbf{Collaboration continue} : communication régulière entre les parties prenantes (équipe IA, développeurs, superviseur).
+    \item \textbf{Amélioration continue} : la rétrospective de sprint permet d’optimiser les processus et d’améliorer la qualité des automatisations.
+    \item \textbf{Priorisation claire} : le backlog Scrum facilite la planification des tâches selon leur valeur ajoutée et leur urgence.
+\end{itemize}
+
+
+\section*{Conclusion}
+En résumé, ce premier chapitre a permis de présenter le contexte professionnel du projet, ainsi que les motivations et les objectifs qui ont conduit à sa mise en œuvre.  
+La revue de l’état de l’art a mis en évidence les apports significatifs de l’intelligence artificielle générative et du prompt engineering dans l’automatisation des workflows, tout en soulignant les limites des solutions existantes comme Make, Zapier et n8n.  
+Enfin, la méthodologie de travail adoptée, fondée sur l’approche Scrum, a posé les bases organisationnelles et techniques qui guideront la suite du projet.  
+Le chapitre suivant sera consacré à l’analyse et à la spécification des besoins, étape essentielle pour définir les exigences fonctionnelles et techniques du système à développer.

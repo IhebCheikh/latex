@@ -1,0 +1,282 @@
+\chapter{Release 1: Cas d’utilisation RH et Marketing }
+
+\section*{Introduction}
+
+Ce chapitre présente la première release du projet, consacrée aux cas d’usage liés aux domaines des ressources humaines et du marketing. 
+L’objectif de cette phase est de démontrer comment l’intégration de l’intelligence artificielle et des plateformes d’automatisation telles que Zapier et Make.com permet d’optimiser des processus métier à forte valeur ajoutée. 
+Deux workflows ont été développés dans cette release : la classification automatique des CVs et la veille concurrentielle des offres télécoms. 
+Ces sprints illustrent la capacité du système à extraire, structurer et analyser des données de manière autonome, tout en réduisant les interventions manuelles et les risques d’erreur.
+
+\section{Sprint 1 : Classification automatique des CVs }
+
+\subsection{Objectif du sprint}
+Dans un processus de recrutement, les équipes des ressources humaines reçoivent un grand nombre de candidatures par email. 
+Le traitement manuel de ces CVs — téléchargement, ouverture, lecture, classification et extraction des informations clés — 
+est chronophage et sujet à des erreurs humaines. 
+
+L’objectif de ce premier cas d’usage est donc d’automatiser intégralement le traitement des CVs reçus par email, 
+en exploitant la plateforme \textbf{Zapier} pour orchestrer les intégrations, 
+et un modèle d’intelligence artificielle (\textit{LLM}) pour la classification sémantique et l’extraction des informations structurées.  
+Ce workflow vise à :
+\begin{itemize}
+    \item Réduire le temps de traitement des candidatures.
+    \item Classer automatiquement chaque CV selon la catégorie professionnelle.
+    \item Centraliser les informations essentielles dans des feuilles Google Sheets dédiées.
+    \item Assurer une traçabilité claire et un stockage automatisé dans Google Drive.
+\end{itemize}
+
+\newpage
+\subsection{Backlog du Sprint 1 : Classification automatique des CVs}
+
+\begin{longtable}{|m{0.6cm}|m{2.7cm}|m{4.5cm}|m{1.5cm}|m{1.8cm}|m{5cm}|}
+\hline
+\textbf{Id} & \textbf{Fonctionnalité} & \textbf{User Story} & \textbf{Priorité} & \textbf{Estimation (J)} & \textbf{Tâches} \\
+\hline
+\endhead
+\hline
+1
+& Classer automatiquement les CVs
+& En tant que recruteur, je souhaite que les CVs reçus par e-mail soient automatiquement analysés et classés selon leur catégorie professionnelle, afin de gagner du temps dans la présélection des candidats.
+& Très haute
+& 20
+& - Configurer le déclencheur Gmail pour détecter les nouveaux CVs.
+\newline - Sauvegarder automatiquement les fichiers sur Google Drive.
+\newline - Extraire le texte des CVs via Files by Zapier.
+\newline - Transmettre le texte à un modèle (Gemini 2.0 Flash-Lite/gpt-4o) pour classification.
+\newline - Nettoyer et formater le JSON généré (Code by Zapier).
+\newline - Acheminer les résultats vers la feuille Google Sheets correspondante selon la catégorie détectée.
+\newline - Tester l’ensemble du flux automatisé et valider la précision de la classification. \\
+\hline
+\caption{Backlog du Sprint 1 – Classification automatique des CVs}
+\end{longtable}
+
+\subsection{Diagrammes dynamiques}
+
+Les diagrammes dynamiques sont utilisés pour représenter le comportement d’un système, en mettant l’accent sur les interactions entre les objets et leur évolution dans le temps.
+Dans le cadre de ce projet, les diagrammes de séquence et d’activité ont été choisis pour leur adéquation à modéliser les workflows d’automatisation, car ils permettent d’illustrer à la fois la coordination entre les agents IA et la logique de déroulement des processus automatisés.
+\subsubsection{Diagramme d'activité}
+
+Le diagramme d’activité représente visuellement le flux de contrôle ou le flux de travail d’une série d’actions. Nous avons choisis ce diagramme pour illustrer des processus métier ou la logique d’une opération complexe. 
+
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.5]{Conception/CV Classification Activity diagram.png}
+        \caption{Diagramme d'activité : Classification automatique des CVs}
+    \end{figure}
+    
+Le workflow a été implémenté sous forme d’un \textbf{Zap} sur la plateforme Zapier, 
+composé d’une chaîne d’actions logiques et automatisées.  
+
+
+\textbf{Description du flux :}
+\begin{itemize}
+\item Le processus débute par la détection automatique d’un \textbf{nouvel e-mail} reçu via Gmail contenant une ou plusieurs pièces jointes (CV).
+\item Dès qu’un message correspondant est identifié, les pièces jointes sont téléchargées et transférées vers le workflow pour traitement.
+\item Les fichiers sont automatiquement enregistrés dans le dossier \texttt{Stage} de \textbf{Google Drive}, puis convertis en format \textbf{Google Docs} afin de faciliter l’extraction de texte.
+\item Une étape de conversion transforme chaque document en texte brut à l’aide de l’application \textbf{Files by Zapier}.
+\item Le texte obtenu est ensuite transmis à un modèle d’intelligence artificielle (\textbf{GPT-4o} ou \textbf{Gemini 2.0 Flash-Lite}) pour une \textbf{analyse et classification sémantique}.
+\item Le modèle identifie et extrait automatiquement les informations clés du CV (nom, e-mail, compétences, années d’expérience, etc.) et renvoie une sortie structurée au format JSON.
+\item Un module \textbf{Code by Zapier (Python)} nettoie et valide le JSON généré, corrige les erreurs de format, complète les champs manquants et formate les numéros de téléphone.
+\item Le flux applique ensuite un \textbf{routage conditionnel} basé sur la catégorie détectée (Software Engineering, QA, DevOps, etc.).
+\item Selon la classification, le CV est automatiquement ajouté à la feuille \textbf{Google Sheets} correspondant à sa catégorie professionnelle :
+\begin{itemize}
+\item Software Engineering
+\item Software Architect
+\item QA
+\item Support Engineering
+\item DevOps Engineering
+\item Chef de Projet
+\item Others
+\end{itemize}
+\item Chaque ajout est horodaté et indexé pour assurer la traçabilité des candidatures et faciliter la recherche ultérieure.
+\end{itemize}
+
+\subsubsection{Diagramme de séquence} 
+
+Un diagramme de séquence, également appelé diagramme de séquence, diagramme séquentiel ou diagramme séquentiel, est un diagramme d’interaction UML. Il montre la collaboration dynamique entre plusieurs objets en décrivant l’ordre temporel dans lequel les messages sont envoyés entre eux.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=1]{Conception/CV classification Sequence Diagram.png}
+        \caption{Diagramme de séquence : Classification automatique des CVs}
+    \end{figure}
+\subsection{Résultats du Workflow}
+Chaque CV traité est enregistré automatiquement dans le dossier Google Drive et les informations clés sont exportées vers la feuille Google Sheets dédiée à sa catégorie.  
+Cette automatisation permet une \textbf{réduction significative du temps de traitement} 
+et une \textbf{meilleure organisation des candidatures}.  
+Les champs extraits incluent :
+\begin{itemize}
+    \item Nom du candidat.
+    \item Classification professionnelle (7 catégories).
+    \item Années d’expérience.
+    \item Compétences principales.
+    \item Email et téléphone.
+    \item Lien LinkedIn.
+\end{itemize}
+
+\subsection{Évaluation Comparative des Modèles LLM}
+Afin d’évaluer la performance du modèle de classification, deux LLM ont été comparés : 
+\textbf{Gemini 2.0 Flash-Lite} et \textbf{GPT-4o}.  
+Les deux modèles ont été testés sur la même base de CVs pour mesurer la précision globale et la nature des erreurs de classification.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|p{7cm}|}
+\hline
+\textbf{Catégorie} & \textbf{Bonne classification} & \textbf{Erreurs / Fausse classification} \\ \hline
+Software Engineering & 15 & 1 (vers DevOps) \\ \hline
+Software Architect & 10 & 5 (vers DevOps) + 1 (vers Software Engineering) \\ \hline
+QA & 15 & 1 \\ \hline
+Support Engineering & 16 & - \\ \hline
+DevOps Engineering & 15 & - \\ \hline
+Chef de Projet & 15 & - \\ \hline
+Others & 10 & 2 (Chef de Projet) + 1 (Support Engineering) + 2  \\ \hline
+\textbf{Accuracy globale} & \multicolumn{2}{c|}{\textbf{89\%}} \\ \hline
+\end{tabular}
+\caption{Résultats du modèle \textbf{Gemini}}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|p{7cm}|}
+\hline
+\textbf{Catégorie} & \textbf{Bonne classification } & \textbf{Erreurs / Fausse classification} \\ \hline
+Software Engineering & 16 & - \\ \hline
+Software Architect & 8 & 1 (vers DevOps) + 7 (vers Software Engineering) \\ \hline
+QA & 15 & 1  \\ \hline
+Support Engineering & 16 & - \\ \hline
+DevOps Engineering & 15 & - \\ \hline
+Chef de Projet & 15 & - \\ \hline
+Others & 12 & 2 (Chef de Projet) + 1 (Support Engineering) \\ \hline
+\textbf{Accuracy globale} & \multicolumn{2}{c|}{\textbf{89\%}} \\ \hline
+\end{tabular}
+\caption{Résultats du modèle \textbf{GPT-4o}}
+\end{table}
+
+\subsubsection{Analyse et importance du benchmark}
+Le benchmark des modèles LLM est essentiel pour choisir la solution la plus robuste avant intégration dans un pipeline automatisé.  
+Bien que \textbf{GPT-4o} et \textbf{Gemini} atteignent tous deux une précision globale de 89\%, 
+leurs erreurs diffèrent :
+
+\begin{itemize}
+    \item \textbf{Gemini} confond parfois les rôles techniques proches (ex. : \textit{Software Architect} et \textit{DevOps});
+    \item \textbf{GPT-4o} montre une meilleure cohérence inter-équipes mais confond certains profils internes à l’ingénierie logicielle.
+\end{itemize}
+
+Ainsi, la comparaison des LLM permet d’évaluer :
+\begin{enumerate}
+    \item la \textbf{robustesse du modèle} face à des cas réels.
+    \item les \textbf{zones d’ambiguïté sémantique} entre rôles similaires.
+    \item et la \textbf{stabilité des classifications} dans un contexte métier.
+\end{enumerate}
+
+En conclusion, bien que les deux modèles offrent une performance équivalente, 
+\textbf{GPT-4o} se distingue par une meilleure stabilité et sera privilégié pour une intégration future.
+
+\subsection{Importance du cas d’utilisation et améliorations possibles}
+
+Ce cas d’utilisation met en évidence la valeur ajoutée de l’automatisation intelligente dans le domaine des ressources humaines.  
+Grâce à l’intégration de l’intelligence artificielle au sein du workflow, le processus de tri et de classification des CV devient plus rapide, plus fiable et plus structuré.  
+
+Cette approche permet notamment :
+\begin{itemize}
+    \item de réduire considérablement la charge manuelle des recruteurs en automatisant la pré-sélection des candidats ;
+    \item de centraliser les informations extraites de manière cohérente et exploitable pour la prise de décision ;
+    \item d’illustrer l’importance d’un benchmark rigoureux des modèles de langage avant tout déploiement en production.
+\end{itemize}
+
+Afin de renforcer les performances du système, plusieurs pistes d’amélioration ont été identifiées :
+\begin{itemize}
+    \item l’ajout d’un module OCR pour permettre la lecture et le traitement des CVs scannés ;
+    \item l’intégration d’une base de données centralisée (telle qu’Airtable, Notion ou MySQL) pour la gestion et l’historisation des candidatures ;
+    \item l’optimisation du prompt d’analyse afin de garantir une extraction multilingue plus précise et plus robuste.
+\end{itemize}
+
+Ainsi, ce cas d’utilisation illustre non seulement la pertinence de l’automatisation par IA dans les processus RH, mais ouvre également la voie à des améliorations continues pour en maximiser l’impact opérationnel.
+
+
+\section{Sprint 2 : Veille Concurrentielle des Offres Télécoms}
+
+\subsection{Objectif du sprint}
+Ce cas d’usage vise à automatiser la \textbf{veille concurrentielle des offres commerciales} des opérateurs télécoms 
+\textbf{Ooredoo} et \textbf{Orange} à travers un workflow intelligent conçu sur \textbf{Make.com}.  
+L’objectif est de collecter, structurer et comparer les offres Internet fixe et mobile publiées sur leurs sites web officiels 
+afin de produire des \textbf{insights stratégiques} pour l’analyse de marché.
+
+\subsection{Backlog du Sprint 2 : Veille concurrentielle des offres télécoms}
+
+\begin{longtable}{|m{0.6cm}|m{2.7cm}|m{4.5cm}|m{1.8cm}|m{5cm}|}
+\hline
+\textbf{Id} & \textbf{Fonctionnalité} & \textbf{User Story} & \textbf{Estimation (J)} & \textbf{Tâches} \\
+\hline
+\endhead
+\hline
+1
+& Automatiser la veille concurrentielle des offres
+& En tant qu’analyste marketing, je souhaite que les offres commerciales d’Ooredoo et d’Orange soient automatiquement collectées, analysées et comparées afin de générer un rapport synthétique sans intervention manuelle.
+& 20
+& - Configurer le module \texttt{scraptio:scrapeurl} pour extraire les pages d’offres depuis les sites web d’Ooredoo et d’Orange.
+\newline - Utiliser GPT-4 pour analyser le contenu et extraire les champs pertinents (nom, prix, data, technologie, engagement).
+\newline - Mettre en place la comparaison automatique entre les offres des deux opérateurs.
+\newline - Générer un rapport de synthèse des écarts détectés (prix, volume, technologie).
+\newline - Exporter le rapport final vers Google Drive pour archivage et partage.
+\newline - Tester et valider la cohérence des données extraites et comparées. \\
+\hline
+\caption{Backlog du Sprint 2 – Veille concurrentielle des offres télécoms}
+\end{longtable}
+
+\subsection{Diagrammes dynamiques}
+
+\subsubsection{Diagramme d'activité}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=1]{Conception/Veille Concurrentielle Activity diagram.png}
+        \caption{Diagramme d'activité : Veille Concurrentielle}
+    \end{figure}
+
+Le workflow est composé de quatre modules principaux :
+\begin{enumerate}
+    \item \textbf{Scraping des URLs :} Extraction automatique des pages d’offres via \texttt{scraptio:scrapeurl}.
+    \item \textbf{Analyse et Extraction :} Utilisation de \textbf{GPT-4} pour extraire les champs pertinents (nom, prix, débit, etc.).
+    \item \textbf{Comparaison des Offres :} Détection des écarts (prix, data, technologie, engagement).
+    \item \textbf{Reporting :} Export des résultats vers \textbf{Google Drive}.
+\end{enumerate}
+
+
+
+\subsection{Résultats du Workflow}
+Les offres d’Ooredoo et d’Orange ont été comparées sur trois segments : Internet fixe, Box 4G/5G et Internet mobile.  
+L’analyse a révélé :
+\begin{itemize}
+    \item Ooredoo plus compétitif sur les grands volumes.
+    \item Orange plus innovant technologiquement.
+    \item un score global : Ooredoo — 8/10, Orange — 7/10.
+\end{itemize}
+\subsection{Importance du cas d’utilisation et améliorations possibles}
+
+Ce cas d’utilisation met en lumière la contribution essentielle de l’automatisation et de l’intelligence artificielle dans la veille concurrentielle.  
+Le workflow conçu permet de collecter, structurer et analyser automatiquement les offres disponibles sur le marché, offrant ainsi une vision claire et actualisée de la concurrence.
+
+Il permet notamment :
+\begin{itemize}
+    \item d’automatiser la collecte et la mise à jour des informations issues des sites concurrents ;
+    \item de réduire considérablement le temps nécessaire à l’analyse et à la comparaison des offres ;
+    \item de générer des rapports exploitables en temps réel pour une prise de décision plus rapide et mieux informée.
+\end{itemize}
+
+Plusieurs perspectives d’amélioration ont été identifiées afin d’enrichir le système :
+\begin{itemize}
+    \item renforcer la robustesse de l’extraction face aux changements de structure HTML des sites suivis ;
+    \item élargir l’analyse en intégrant des sources complémentaires telles que les réseaux sociaux ou les forums ;
+    \item développer des tableaux de bord dynamiques pour visualiser les tendances et indicateurs clés en continu.
+\end{itemize}
+
+Ainsi, ce cas d’utilisation illustre pleinement comment un workflow intelligent peut transformer une activité manuelle de veille en un processus automatisé, réactif et orienté décision.
+
+\section*{Conclusion}
+
+Cette première release a permis de valider la pertinence de l’automatisation appliquée aux domaines RH et marketing. 
+Le premier use case a montré comment un pipeline intelligent peut accélérer la présélection des candidats grâce à la classification automatique des CVs, tandis que le second a démontré la puissance des LLM dans la veille concurrentielle et l’analyse des offres commerciales. 
+Ces résultats confirment l’efficacité de l’approche modulaire et la robustesse des plateformes Zapier et Make.com, ouvrant la voie à des intégrations plus avancées dans les prochaines releases.

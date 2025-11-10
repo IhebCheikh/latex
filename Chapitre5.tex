@@ -1,0 +1,194 @@
+\chapter{Release 3 : Chatbot Rasa de Troubleshooting FAI}
+
+\section*{Introduction}
+
+Dans le cadre du support technique des Fournisseurs d’Accès Internet (FAI), les équipes d’assistance font face à un volume important de requêtes quotidiennes : perte de connexion, lenteur de la navigation, messages d’erreur, ou encore demandes de planification de technicien.  
+Ces interactions, souvent répétitives, mobilisent une part importante du temps des agents humains, notamment pour des vérifications basiques : état du modem, branchement des câbles, ou test de la ligne.
+
+\section{Sprint 6 : Chatbot Rasa de troubleshooting FAI }
+
+\subsection{Objectif du sprint}
+
+L’objectif de ce use case était de \textbf{concevoir un chatbot intelligent basé sur Rasa}, capable de :
+\begin{itemize}
+    \item Diagnostiquer automatiquement les problèmes de connexion (ADSL, VDSL, Fibre).  
+    \item Guider le client pas à pas dans les tests de base (voyants, câbles, redémarrage).  
+    \item Déterminer s’il est nécessaire d’envoyer un technicien ou d’effectuer un test de ligne à distance.  
+    \item Automatiser la réponse, tout en maintenant un ton professionnel et accessible.  
+\end{itemize}
+
+Ce chatbot vise à réduire le délai de traitement des incidents et à décharger les conseillers humains des tâches répétitives.
+
+\newpage
+
+\subsection{Backlog du Sprint 6 : Chatbot Rasa de troubleshooting FAI}
+
+\begin{longtable}{|m{0.4cm}|m{2.7cm}|m{4cm}|m{1.8cm}|m{6.5cm}|}
+\hline
+\textbf{Id} & \textbf{Fonctionnalité} & \textbf{User Story} & \textbf{Estimation (J)} & \textbf{Tâches} \\
+\hline
+\endhead
+\hline
+6
+& Chatbot Rasa de troubleshooting FAI
+& En tant que client, je souhaite dialoguer avec un chatbot capable de diagnostiquer les problèmes de connexion Internet et de me guider dans les étapes de résolution, afin d’obtenir une assistance rapide sans passer par le support humain.
+& 30
+& - Créer le projet \textbf{Rasa} et définir les intents (panne, lenteur, déconnexion, etc.). 
+\newline - Construire les \textbf{stories} et \textbf{rules} pour les scénarios de diagnostic. 
+\newline - Développer les \textbf{actions personnalisées} pour les tests de ligne et vérifications réseau. 
+\newline - Connecter Rasa à n8n via \textbf{HTTP Request} pour exécuter les diagnostics automatisés. 
+\newline - Mettre en place la \textbf{gestion des états de session} et de l’historique des conversations. 
+\newline - Créer les réponses contextuelles pour les cas de relance et d’incompréhension. 
+\newline - Tester le chatbot sur différents scénarios réels et ajuster les intentions et règles. \\
+\hline
+\caption{Backlog du Sprint 6 – Chatbot Rasa de troubleshooting FAI}
+\end{longtable}
+
+
+\subsection{Architecture de Rasa}
+
+L’architecture de \textbf{Rasa} repose sur trois composants principaux : le \textbf{NLU}, le \textbf{Core} et le \textbf{Serveur d’Actions}.  
+Ces éléments interagissent pour comprendre les messages des utilisateurs, gérer le flux de conversation et exécuter les actions nécessaires.
+
+Le \textbf{NLU (Natural Language Understanding)} est chargé de l’interprétation des entrées utilisateur.  
+Il extrait les \textbf{intentions} et les \textbf{entités} à partir du texte saisi, grâce à des étapes de prétraitement, de \textit{tokenisation} et de \textit{vectorisation}.  
+Ce module repose sur des modèles d’apprentissage automatique capables de classifier l’intention de l’utilisateur et de détecter les informations clés nécessaires à la suite du dialogue.
+
+Le \textbf{Core} constitue le cœur décisionnel du chatbot.  
+Il gère le \textbf{contexte conversationnel}, mémorise l’état du dialogue et détermine la \textbf{prochaine action} à exécuter selon l’intention détectée et l’historique des échanges.  
+Il fonctionne sur la base d’un modèle de \textit{machine learning} séquentiel, qui apprend à prévoir la meilleure réponse ou action en fonction des scénarios d’interaction précédents.
+
+Enfin, le \textbf{Serveur d’Actions} exécute les actions spécifiques définies par le développeur, comme effectuer un diagnostic réseau, consulter une base de données ou envoyer une notification.  
+Ce serveur, généralement développé en \textit{Python}, communique avec le Core via une \textit{API REST}, et permet d’intégrer des logiques métiers complexes au sein du chatbot.
+
+L’architecture de Rasa est \textbf{modulaire et extensible}, ce qui facilite la personnalisation et la mise à jour de chaque composant indépendamment.  
+Les modules NLU et Core peuvent être entraînés séparément, favorisant des cycles de développement plus rapides.  
+De plus, Rasa offre des \textbf{intégrations natives avec diverses plateformes et services externes}, permettant ainsi de déployer des chatbots connectés à des systèmes métiers, applications web ou outils d’assistance client.
+
+\subsubsection{Structure du projet Rasa}
+\begin{itemize}
+    \item \textbf{Fichier \texttt{nlu.yml}} : contient les intentions principales telles que \textit{salutation}, \textit{probleme\_connexion}, \textit{etat\_dsl}, \textit{message\_erreur}, \textit{planifier\_technicien}, etc.  
+    \item \textbf{Fichier \texttt{stories.yml}} : décrit les scénarios conversationnels typiques, par exemple la procédure de diagnostic pour un problème de connexion.  
+    \item \textbf{Fichier \texttt{rules.yml}} : contient les règles déterministes, notamment pour la gestion des salutations, remerciements ou clôtures de conversation.  
+    \item \textbf{Fichier \texttt{domain.yml}} : définit les réponses types, les slots (code client, type de connexion, état du modem) et les actions personnalisées.  
+    \item \textbf{Fichier \texttt{config.yml}} : spécifie la configuration du pipeline de traitement du langage et des politiques de décision du bot.  
+\end{itemize}
+
+
+
+\textbf{Interprétation des éléments clés :}  
+Le paramètre \texttt{language: fr} définit la langue principale du modèle.  
+Le \textbf{pipeline} regroupe les composants du traitement du langage naturel, du \textit{tokenizer} à la classification des intentions avec \texttt{DIETClassifier}.  
+Les modules \texttt{CountVectorsFeaturizer} et \texttt{RegexFeaturizer} permettent d’extraire les caractéristiques linguistiques des textes, tandis que le \texttt{FallbackClassifier} gère les cas d’incertitude lorsque le bot n’est pas sûr de la compréhension du message.  
+La section \textbf{policies} définit la logique décisionnelle du dialogue :  
+\texttt{MemoizationPolicy} apprend à reproduire des réponses déjà connues,  
+\texttt{TEDPolicy} prédit la prochaine action selon le contexte conversationnel,  
+et \texttt{RulePolicy} applique les règles fixes et gère les comportements de secours (\textit{fallback}).  
+Enfin, l’identifiant \texttt{assistant\_id} permet de suivre le modèle entraîné au sein du projet.
+
+
+\subsubsection{Logique conversationnelle}
+
+Le dialogue repose sur une séquence structurée :
+\begin{enumerate}
+    \item Le client déclare un problème (\textit{je ne peux pas me connecter}).  
+    \item Le bot demande le code client et le type de connexion.  
+    \item Il guide l’utilisateur à travers une série de vérifications : voyants, câbles, redémarrage.  
+    \item Si le problème persiste, il propose soit un test de ligne, soit un rendez-vous technicien.  
+\end{enumerate}
+
+Chaque étape est contrôlée par des \textbf{intents et slots}, garantissant une compréhension stable et un suivi logique des étapes de dépannage.
+
+\subsubsection{Intégrations techniques}
+
+\begin{itemize}
+    \item \textbf{Canal de communication} : Rasa Shell (CLI) pour les tests, avec possibilité d’intégration ultérieure à un canal Web ou WhatsApp via l’API REST.  
+    \item \textbf{Actions personnalisées} : en Python, pour enregistrer le code client et gérer la logique conditionnelle selon le type de connexion.  
+    \item \textbf{Connexion externe} : prévue avec n8n pour déclencher la création automatique d’un ticket ou la planification d’un technicien.  
+\end{itemize}
+
+\subsubsection{Intégration avec n8n}
+
+Afin d’étendre les capacités du chatbot et de le relier à l’écosystème d’automatisation, une intégration complète avec la plateforme \textbf{n8n} a été mise en place.  
+Le workflow \textit{« Troubleshooting Chatbot – Rasa »} agit comme une passerelle entre le moteur de dialogue \textbf{Rasa} et les outils externes de gestion.
+
+Lorsqu’un utilisateur envoie un message, celui-ci est capté par le nœud \texttt{Chat Trigger}, puis transmis via une requête HTTP au serveur Rasa (\texttt{/webhooks/rest/webhook}).  
+La réponse de Rasa — contenant le texte, l’intention ou l’action à effectuer — est ensuite traitée par un \textbf{agent IA LangChain} exécuté dans n8n.  
+Cet agent s’appuie sur le modèle \textbf{GPT-4o} pour reformuler la réponse et maintenir une cohérence conversationnelle fluide.  
+
+Chaque échange est automatiquement enregistré dans un document \textbf{Google Docs} grâce au nœud \texttt{Update a document}, assurant ainsi la traçabilité complète des interactions entre le chatbot et les clients.  
+Cette architecture hybride (Rasa + n8n + LLM) permet non seulement de gérer les conversations techniques, mais aussi de connecter directement le diagnostic à d’autres automatisations, telles que la création de tickets, les notifications ou la planification d’un technicien.
+
+
+\subsection{Résultats Obtenus}
+
+Les tests réalisés démontrent que le chatbot est capable de gérer des conversations naturelles et cohérentes.  
+Voici quelques extraits représentatifs :
+
+\begin{verbatim}
+Your input -> bonjour
+Bonjour ! Je suis l’assistant FAI. Comment puis-je vous aider ?
+Je peux diagnostiquer votre connexion (ADSL/VDSL/Fibre), vérifier une coupure, envoyer une 
+facture, ou planifier un technicien.
+
+Your input -> vdsl
+Le voyant DSL est-il vert fixe, clignotant ou éteint ?
+
+Your input -> vert
+Avez-vous accès à Internet (pages Web, applications) ?
+
+Your input -> non
+Les câbles RJ11 sont-ils bien branchés et en bon état ?
+
+Your input -> oui
+Avez-vous redémarré le modem (débrancher 30s puis rebrancher) ?
+
+Your input -> oui
+Avez-vous un message d’erreur quand vous ouvrez des pages ?
+
+Your input -> non
+Pouvez-vous tester avec un autre appareil (smartphone/PC) ?
+
+Your input -> oui
+Le problème persiste-t-il après toutes ces vérifications ?
+
+Your input -> oui
+Je peux planifier un rendez-vous technicien ou un test de ligne à distance.
+
+Your input -> rdv
+Entendu ! Un technicien sera dépêché chez vous. Vous aurez une confirmation par SMS.
+
+Your input -> merci
+Je vous en prie, ravi de pouvoir aider !
+\end{verbatim}
+\subsection*{Performance et évaluation}
+
+Le chatbot a atteint un \textbf{taux de compréhension de 92\%} sur un jeu de 50 interactions test.  
+Les confusions restantes concernaient principalement :
+\begin{itemize}
+    \item La reconnaissance de variantes d’intents (\textit{pas de ligne}, \textit{connexion coupée}, etc.).  
+    \item Des entrées ambigües ou bruitées (ex. “non7”, “nono”).  
+\end{itemize}
+
+Malgré cela, le flux global reste robuste : chaque scénario aboutit à une solution concrète (test de ligne ou planification de technicien).
+
+\subsection{Améliorations Possibles}
+
+\begin{itemize}
+    \item \textbf{Sensibilité linguistique} : le modèle peut échouer face à des tournures dialectales tunisiennes ou des fautes de frappe fréquentes.  
+    \item \textbf{Manque d’intégration temps réel} : actuellement, la planification de technicien est simulée et non connectée à un système réel.  
+    \item \textbf{Absence de mémoire conversationnelle} : le bot ne conserve pas l’historique des échanges entre sessions.  
+\end{itemize}
+
+\noindent
+Les améliorations envisagées incluent :
+\begin{enumerate}
+    \item L’ajout d’un modèle de compréhension multilingue pour le dialecte tunisien.  
+    \item L’intégration complète avec n8n pour la création automatique de tickets et notifications email.  
+    \item Un tableau de bord d’analyse des conversations pour mesurer la satisfaction client.  
+\end{enumerate}
+
+\section*{Conclusion}
+
+Ce chatbot de troubleshooting représente une avancée concrète vers l’automatisation du support technique dans les FAI.  
+Grâce à Rasa, il est possible d’obtenir une expérience utilisateur fluide, cohérente et entièrement personnalisable, tout en réduisant la charge des équipes humaines et les temps de résolution des incidents.

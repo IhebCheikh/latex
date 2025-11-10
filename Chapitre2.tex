@@ -1,0 +1,321 @@
+\chapter{Analyse et spécification des besoins}
+
+
+\section*{Introduction}
+
+Ce chapitre présente l’analyse fonctionnelle et non fonctionnelle des systèmes développés dans le cadre du projet d’automatisation des processus par Intelligence Artificielle. Le projet regroupe six use cases répartis en trois domaines : l’automatisation des processus RH, la gestion de projet intelligente et l’assistance client. Ces workflows ont été conçus et implémentés à l’aide de plateformes d’orchestration telles que Zapier, Make.com, n8n et Rasa. En complément de cette analyse, le chapitre expose également la planification du travail selon la méthodologie agile Scrum, décrit l’architecture du workflow n8n, la plateforme principale utilisée pour l’intégration des cas d’usage, ainsi que l’environnement de travail mis en place durant le projet.
+
+
+\section{Spécification des besoins}
+
+\subsection{Identification des composants}
+
+Les systèmes sont entièrement automatisés et orchestrés via des workflows. Ils impliques plusieurs composants:
+
+\begin{itemize}[label=\textbullet]
+    \item \textbf{Bénéficiaires de l'automatisation :} Utilisateurs métiers (chefs de projet, RH, analystes techniques) qui bénéficient de l'exécution automatique des workflows sans avoir à intervenir.
+    \item \textbf{Agents intégrés :} Systèmes intelligents effectuant les tâches automatisées dans le workflow, par exemple :
+        \begin{itemize}
+            \item Classification de CVs 
+            \item Veille concurrentielle 
+            \item Priorisation et assignation automatique des tâches 
+            \item Extraction d’actions à partir de réunions 
+            \item Vérification de conformité des projets 
+            \item Chatbot Rasa de support technique FAI
+        \end{itemize}
+    \item \textbf{Systèmes et services externes :} Gmail, Google Drive, Trello, Google Sheets, Scraptio et autres API intégrées.
+\end{itemize}
+
+
+\subsection{Spécification des besoins fonctionnels par cas d'utilisation}
+
+\begin{itemize}
+    \item \textbf{Classification des CVs} : Automatiser la réception, l’analyse et la catégorisation des CVs reçus par email selon le domaine d’expertise du candidat.
+    \item \textbf{Veille concurrentielle} : Automatiser la collecte, la comparaison et la mise à jour des offres concurrentes dans le secteur des télécommunications.
+    \item \textbf{Priorisation et assignation automatique des tâches} : Analyser automatiquement les requêtes entrantes (bugs, features, support) et les assigner au bon profil sur Trello avec notification.
+    \item \textbf{Transcription intelligente des réunions et extraction automatique des actions} : Transformer les transcriptions de réunions en backlog structuré et distribuer automatiquement les actions par membre d’équipe.
+    \item \textbf{Vérification automatique de la conformité des projets} : Vérifier la cohérence entre le programme principal et les rapports d’équipes (Frontend, Backend, QA, AI/ML), et signaler les écarts.
+    \item \textbf{Chatbot Rasa FAI} : Fournir un support automatisé aux clients pour diagnostiquer et résoudre les problèmes de connexion Internet via interaction textuelle.
+\end{itemize}
+
+\subsection{Spécification des besoins non fonctionnels}
+
+\begin{itemize}[label=\textbullet]
+    \item \textbf{Interopérabilité :} tous les workflows doivent communiquer entre eux via API REST ou connecteurs natifs (Zapier, Make, n8n).
+    \item \textbf{Scalabilité :} le système doit permettre d’ajouter de nouveaux agents IA sans impacter les workflows existants.
+    \item \textbf{Sécurité :} les données manipulées (emails, CVs, comptes utilisateurs) doivent être traitées conformément aux bonnes pratiques RGPD.
+    \item \textbf{Fiabilité :} chaque workflow doit gérer les erreurs (reconnexion, retry) et consigner les logs d’exécution.
+    \item \textbf{Performance :} les traitements IA doivent s’exécuter en temps raisonnable (<10 s pour les appels LLM).
+    \item \textbf{Traçabilité :} les exécutions et résultats doivent être historisés dans un tableau de bord (Google Sheets, Notion ...).
+\end{itemize}
+
+\section{Planification de travail}
+
+\subsection{Backlog du produit}
+
+\begin{longtable}{|p{1cm}|p{3cm}|p{8cm}|p{2cm}|}
+\hline
+\textbf{ID} & \textbf{Feature} & \textbf{User Story} & \textbf{Priorité} \\
+\hline
+1 & Classification de CVs & En tant que RH, je souhaite que les CV reçus soient automatiquement classés par catégorie pour accélérer la sélection. & Haute \\
+\hline
+2 & Veille concurrentielle & En tant qu’analyste marketing, je veux recevoir une veille automatique des offres concurrentes pour ajuster la stratégie tarifaire. & Haute \\
+\hline
+3 & Priorisation et assignation automatique des tâches & En tant que chef de projet, je veux que les tâches Trello soient automatiquement classées et assignées selon leur type et priorité. & Haute \\
+\hline
+4 & Transcription intelligente des réunions et extraction automatique des actions & En tant que manager, je veux transformer les comptes rendus de réunions en backlog structuré automatiquement. & Haute \\
+\hline
+5 & Vérification automatique de la conformité des projets & En tant que responsable technique, je veux identifier recevoir par mail les écarts entre les rapports d’équipes et les spécifications du projet.
+& Haute \\
+\hline
+6 & Chatbot de support FAI & En tant que client, je veux dialoguer avec un chatbot pour gérer mon problème Internet sans intervention humaine. & Haute \\
+\hline
+\caption{Backlog du produit global}
+\end{longtable}
+
+\subsection{Répartition des sprints}
+
+\begin{longtable}{|m{2cm}|m{13cm}|}
+\hline
+\textbf{Release ID} & \textbf{Nom du Sprint} \\
+\hline
+\endhead
+\endfoot
+\endlastfoot
+
+1 &
+\begin{itemize}[label=\textbullet,font=\normalsize]
+    \item Sprint 1 : Classification automatique des CVs 
+    \item Sprint 2 : Veille concurrentielle des Offres Télécoms
+\end{itemize}
+\\
+\hline
+
+2 &
+\begin{itemize}[label=\textbullet,font=\normalsize]
+    \item Sprint 3 : Priorisation et assignation automatique des tâches 
+    \item Sprint 4 : Transcription intelligente des réunions et extraction automatique des actions
+    \item Sprint 5 : Vérification automatique de la conformité des projets
+\end{itemize}
+\\
+\hline
+
+3 &
+\begin{itemize}[label=\textbullet,font=\normalsize]
+    \item Sprint 6 : Chatbot Rasa de troubleshooting FAI
+\end{itemize}
+\\
+\hline
+
+\captionsetup{justification=centering,margin=2cm}
+\caption{Répartition des sprints}
+\label{tab:Répartition des sprints}
+\end{longtable}
+
+\section{Architecture de n8n}
+
+La compréhension de l’architecture de \textbf{n8n}, la plateforme la principale de ce projet, est essentielle pour exploiter pleinement ses capacités, notamment en matière de scalabilité, de personnalisation et d’intégration dans des environnements complexes.  
+Cette section présente une vue d’ensemble des principaux composants et du fonctionnement interne de la plateforme.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.75]{achitectures/n8n architecture.png}
+        \caption{Architecture de n8n}
+    \end{figure}
+    
+\subsection{Composants principaux}
+
+\begin{itemize}[label=\textbullet,font=\normalsize]
+    \item \textbf{n8n Editor (Frontend/UI)} :  
+    Il s’agit de l’interface visuelle permettant de concevoir, configurer et gérer les workflows.  
+    Cette application web, développée avec des frameworks JavaScript modernes, génère une représentation JSON de chaque workflow créé.
+
+    \item \textbf{Workflow Execution Engine (Backend/Worker)} :  
+    C’est le moteur d’exécution responsable du traitement réel des workflows.  
+    Il interprète le fichier JSON du workflow, exécute les nœuds un à un, gère la transformation des données, le traitement des erreurs et la journalisation.  
+    Pour les environnements à forte charge, n8n peut fonctionner en \textit{Queue Mode}, séparant le processus principal et les processus \textit{workers} afin d’exécuter plusieurs workflows en parallèle.
+
+    \item \textbf{Nodes} :  
+    Les nœuds représentent les blocs fonctionnels de n8n :
+    \begin{itemize}
+        \item \textit{Trigger Nodes} : déclenchent un workflow à partir d’un événement externe (webhook, cron, action manuelle ou service tiers).
+        \item \textit{Regular Nodes} : exécutent des actions spécifiques (requêtes API, envoi d’e-mails, traitement de données, logique conditionnelle, etc.).
+    \end{itemize}
+    Chaque nœud est une unité de code indépendante, souvent écrite en JavaScript ou TypeScript.
+
+    \item \textbf{Base de données} :  
+    n8n utilise une base de données (par défaut \textit{SQLite}, mais supporte également \textit{PostgreSQL} et \textit{MySQL/MariaDB} pour la production) afin de stocker :
+    \begin{itemize}
+        \item les définitions des workflows,
+        \item les identifiants et credentials des services connectés,
+        \item les logs et historiques d’exécution,
+        \item les données utilisateurs (si la gestion multi-utilisateurs est activée).
+    \end{itemize}
+
+    \item \textbf{REST API} :  
+    n8n expose une API REST permettant une interaction programmatique complète : création, exécution, modification et récupération de workflows, intégration avec d’autres systèmes, ou déclenchement automatisé de tâches.
+\end{itemize}
+
+\subsection{Fonctionnement global}
+
+Le fonctionnement de n8n repose sur une séquence d’étapes cohérente, illustrée ci-dessous :
+
+\begin{enumerate}
+    \item \textbf{Conception} : le workflow est créé dans l’éditeur n8n et sauvegardé en base sous forme d’un objet JSON.
+    \item \textbf{Déclenchement} : un \textit{Trigger Node} active le workflow (ex. : réception d’un webhook, exécution planifiée).
+    \item \textbf{Exécution} :  
+    Le moteur d’exécution charge la définition JSON, démarre par le nœud déclencheur, et exécute les nœuds suivants dans l’ordre défini.  
+    Les données générées par un nœud deviennent les entrées du suivant, permettant des chaînes de traitement complexes et dynamiques.
+    \item \textbf{Interactions externes} : chaque nœud peut communiquer avec des services tiers (API, bases de données, messageries, etc.).
+    \item \textbf{Journalisation} : les résultats, erreurs et données intermédiaires sont enregistrés dans la base pour analyse et traçabilité.
+\end{enumerate}
+
+\subsection{Considérations de scalabilité}
+
+Afin d’assurer la performance et la fiabilité du système dans un contexte de production, plusieurs mécanismes de scalabilité sont prévus :
+
+\begin{itemize}[label=\textbullet,font=\normalsize]
+    \item \textbf{Modes d’exécution} :  
+    \begin{itemize}
+        \item \textit{Main Mode} : un seul processus exécute l’ensemble des workflows (mode par défaut, adapté aux petits environnements).
+        \item \textit{Queue Mode} : séparation du processus principal et des \textit{workers}, permettant une exécution concurrente et une meilleure tolérance aux charges élevées.
+    \end{itemize}
+    
+    \item \textbf{Choix de la base de données} :  
+    Pour les déploiements à grande échelle, il est recommandé d’utiliser \textit{PostgreSQL} ou \textit{MySQL/MariaDB} plutôt que \textit{SQLite}, afin d’améliorer la performance et la fiabilité sous forte charge.
+
+    \item \textbf{Ressources système} :  
+    Le dimensionnement adéquat du CPU, de la mémoire et de la bande passante réseau est essentiel, en particulier pour les environnements comportant de nombreux workflows complexes ou déclenchés simultanément.
+\end{itemize}
+
+
+L’architecture de n8n repose sur une séparation claire entre la conception (Frontend), l’exécution (Backend), la gestion des données (Base de données) et l’intégration externe (API).  
+Cette modularité rend la plateforme flexible, extensible et adaptée aussi bien aux prototypes simples qu’aux déploiements d’entreprise à grande échelle.
+
+\section{Environnement de travail}
+
+\subsection{Plateformes d’automatisation de workflows}
+
+\begin{itemize}[label=\textbullet,font=\normalsize]
+
+    \item \textbf{Zapier} :  
+    Zapier est une plateforme d’orchestration d’IA qui permet de concevoir et de déployer des workflows automatisés basés sur l’intelligence artificielle.  
+    Elle propose une suite d’outils \textbf{no-code}, \textbf{low-code} et \textbf{full-code}, permettant de combiner automatiquement des workflows, des bases de données et des interfaces à l’aide de l’IA.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.15]{logo/zapier.png}
+        \caption{Logo de Zapier}
+    \end{figure}
+
+    \item \textbf{Make.com (Integromat)} :  
+    Make est une plateforme leader dans le développement d’intégrations et d’automatisations, qui permet aux entreprises de tous secteurs de \textbf{visualiser leurs systèmes}, \textbf{rationaliser leurs processus} et \textbf{exploiter la puissance de l’IA}.  
+    Elle se distingue par une approche visuelle et modulaire facilitant la création de scénarios complexes connectant plusieurs services web.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.45]{logo/make.png}
+        \caption{Logo de Make.com (Integromat)}
+    \end{figure}
+
+    \item \textbf{n8n} :  
+    n8n est une plateforme d’automatisation de workflows open source combinant la \textbf{flexibilité du code} avec la \textbf{rapidité du no-code}.  
+    Elle permet d’orchestrer des processus métier intégrant des modèles d’intelligence artificielle, des API et des services externes.  
+    Son architecture repose sur un moteur d’exécution, un éditeur visuel et une base de données interne, ce qui la rend hautement extensible et adaptée à des déploiements sur mesure.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.45]{logo/n8n.png}
+        \caption{Logo de n8n}
+    \end{figure}
+
+\end{itemize}
+
+\subsection{Plateforme conversationnelle : Rasa}
+
+\begin{itemize}[label=\textbullet,font=\normalsize]
+
+    \item \textbf{Rasa} :  
+    Rasa Open Source est une plateforme d’intelligence artificielle conversationnelle open source permettant la conception d’assistants virtuels et de chatbots intelligents.  
+    Elle repose sur deux composants principaux :
+    \begin{itemize}
+        \item \textbf{Rasa NLU} : pour la compréhension du langage naturel (intents, entités).
+        \item \textbf{Rasa Core} : pour la gestion du dialogue (stories, actions, logique de conversation).
+    \end{itemize}
+    Rasa offre également la possibilité de se connecter à des canaux de messagerie et à des systèmes tiers via un ensemble d’API et de webhooks, facilitant son intégration dans des environnements complexes.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.55]{logo/rasa.png}
+        \caption{Logo de Rasa}
+    \end{figure}
+
+\end{itemize}
+
+\subsection{Modèles d’intelligence artificielle }
+
+Durant le stage, plusieurs modèles de traitement du langage naturel (LLM) ont été testés et comparés afin d’optimiser la précision et la fiabilité des workflows automatisés.  
+Les deux modèles principaux utilisés sont \textbf{GPT-4o} et \textbf{Gemini 2.0 Flash-Lite}.
+
+\begin{itemize}[label=\textbullet,font=\normalsize]
+    \item \textbf{GPT-4o} :  
+    Développé par OpenAI, GPT-4o est un modèle multimodal avancé capable de traiter simultanément du texte, des images et de l’audio.  
+    Il a été utilisé pour :
+    \begin{itemize}
+        \item l’analyse de conformité des projets,
+        \item la compréhension des transcriptions de réunions,
+        \item la génération de rapports structurés et de résumés automatiques.
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.1]{logo/openAI.png}
+        \caption{Logo de OpenAI (GPT-4o)}
+    \end{figure}
+
+    \item \textbf{Gemini 2.0 Flash-Lite} :  
+    Développé par Google DeepMind, Gemini 2.0 Flash-Lite est un modèle optimisé pour les cas d’usage nécessitant un temps de réponse rapide et une faible consommation de ressources.  
+    Il a principalement été utilisé pour :
+    \begin{itemize}
+        \item la classification automatique des CVs,
+        \item la veille concurrentielle et l’analyse d’offres télécoms.
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.45]{logo/Gemini.png}
+        \caption{Logo de Gemini 2.0 Flash-Lite}
+    \end{figure}
+
+\end{itemize}
+
+\subsection{Outils de gestion de projet}
+
+La gestion et le suivi du projet ont été assurés à l’aide de deux outils collaboratifs principaux : \textbf{GitHub} et \textbf{Jira}.
+
+\begin{itemize}[label=\textbullet,font=\normalsize]
+    \item \textbf{GitHub} :  
+    GitHub a été utilisé pour le versionnement du code, la gestion des dépôts liés aux workflows et la documentation technique.  
+    Les différentes branches ont permis d’assurer un développement itératif et collaboratif.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.3]{logo/GitHub-Logo-700x394.png}
+        \caption{Logo de GitHub}
+    \end{figure}
+
+    \item \textbf{Jira} :  
+    Jira a servi à la planification agile et au suivi des tâches selon la méthodologie Scrum.  
+    Chaque sprint correspondait à un ensemble de workflows ou de modules à développer, avec des tableaux Kanban permettant de suivre l’avancement en temps réel.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.35]{logo/Jira-Logo-700x394.png}
+        \caption{Logo de Jira}
+    \end{figure}
+
+\end{itemize}
+
+\section*{Conclusion}
+
+Ce chapitre a présenté l’analyse fonctionnelle et non fonctionnelle du projet d’automatisation par intelligence artificielle, ainsi que la planification du travail et l’architecture du système. L’utilisation de la plateforme n8n a permis d’orchestrer efficacement les différents workflows, garantissant une intégration fluide entre les outils et les modèles d’IA. La méthodologie Scrum a favorisé une progression itérative et mesurable, assurant la livraison continue de solutions fiables et performantes.

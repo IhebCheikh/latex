@@ -1,0 +1,484 @@
+\chapter{Release 2 : Cas d’utilisation de Gestion de Projet}
+
+\section*{Introduction}
+
+Ce chapitre présente l’ensemble des workflows développés dans le cadre de la gestion de projet intelligente.
+Il regroupe trois use cases centrés sur la priorisation automatique des tâches, la transcription et l’extraction d’actions à partir de réunions, ainsi que la vérification de la conformité des livrables.
+Le chapitre aborde également la planification du travail, l’architecture des flux dans n8n, la plateforme principale utilisée, ainsi que l’environnement technique mis en place pour le développement et les tests.
+
+\section{Sprint 3 : Priorisation et assignation automatique des tâches }
+
+\subsection{Objectif du sprint}
+
+Dans le cadre de la gestion des projets e-commerce, l’équipe faisait face à un volume croissant de requêtes provenant de plusieurs canaux : emails clients, rapports de bugs, et demandes de nouvelles fonctionnalités.  
+Ce flux continu de tâches créait plusieurs difficultés :
+
+\begin{itemize}
+    \item \textbf{Attribution manuelle chronophage} : les chefs de projet devaient lire chaque email, déterminer sa nature (bug, support, ou fonctionnalité) et choisir manuellement le membre d’équipe le plus approprié.  
+    \item \textbf{Incohérences dans la priorisation} : les critères de priorité (critique, haute, moyenne, faible) variaient d’un membre à l’autre, entraînant une perte de cohérence et des retards dans la gestion des incidents urgents.  
+    \item \textbf{Absence de contrôle qualité} : aucune validation systématique n’était effectuée sur les décisions d’attribution, ce qui pouvait engendrer des erreurs.  
+    \item \textbf{Surcharge cognitive} : la majorité du temps des chefs de projet était absorbée par des tâches répétitives et peu valorisantes.
+\end{itemize}
+
+L’objectif principal du sprint a donc été de \textbf{concevoir un système intelligent d’automatisation} permettant :
+
+\begin{enumerate}
+    \item Analyser automatiquement les emails entrants.  
+    \item Classifier le type et la priorité des tâches via un modèle d’intelligence artificielle.  
+    \item Assigner la tâche au membre d’équipe le plus pertinent.  
+    \item Intégrer automatiquement les informations dans Trello avec notification par email.  
+    \item Assurer un \textbf{contrôle qualité automatisé} sur chaque décision de l’IA, avec une intervention humaine en cas d’échec répété.
+\end{enumerate}
+
+L’ambition finale était de \textbf{réduire le temps de traitement des tickets de 90\%}, tout en garantissant la fiabilité et la cohérence des décisions automatisées.
+
+\subsection{Backlog du sprint}
+\begin{longtable}{|m{0.4cm}|m{2.7cm}|m{4cm}|m{1.8cm}|m{6.5cm}|}
+\hline
+\textbf{Id} & \textbf{Fonctionnalité} & \textbf{User Story} & \textbf{Estimation (J)} & \textbf{Tâches} \\
+\hline
+\endhead
+\hline
+3
+& Priorisation et assignation automatique des tâches
+& En tant que chef de projet, je souhaite que les e-mails entrants contenant des demandes (support, bug, feature) soient automatiquement analysés, classifiés, priorisés et assignés au bon membre de l’équipe afin de réduire le temps de tri manuel et d’améliorer la réactivité.
+& 30
+& - Configurer le déclencheur \textbf{Gmail} pour les nouveaux e-mails. 
+\newline - Envoyer le contenu au modèle \textbf{GPT-4o} pour classification et attribution. 
+\newline - Mettre en place un \textbf{Control Agent} pour évaluer la qualité du résultat. 
+\newline - Ajouter une condition \textbf{IF} pour valider les scores (>6) ou compter les erreurs. 
+\newline - Définir un seuil d’erreurs et activer la \textbf{révision humaine} après 5 échecs. 
+\newline - Mapper les priorités avec les labels \textbf{Trello}. 
+\newline - Créer automatiquement la carte \textbf{Trello} avec les détails de la tâche. 
+\newline - Envoyer une notification e-mail au membre assigné. 
+\newline - Intégrer la validation manuelle du JSON avant Trello. 
+\newline - Tester la cohérence globale du flux (score, données, envoi, création). \\
+\hline
+\caption{Backlog du Sprint 3 – Priorisation et assignation automatique des tâches}
+\end{longtable}
+
+
+\subsection{Diagrammes dynamiques}
+
+\subsubsection{Diagramme d’activité}
+
+Le diagramme d’activité du sprint 3 illustre le flux complet d’automatisation du processus de priorisation et d’assignation des tâches à partir des e-mails entrants.  
+Chaque étape est orchestrée via un workflow intelligent intégrant le modèle \textbf{GPT-4o}, un \textbf{Control Agent}, et des connecteurs Trello et Gmail.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.65]{Conception/Task Prioritization Activity diagram.png}
+        \caption{Diagramme d'activité : Priorisation et assignation automatique des tâches}
+    \end{figure}
+
+    
+\textbf{Description du flux :}  
+\begin{itemize}
+    \item Le processus débute à la réception d’un e-mail contenant une demande.
+    \item Le contenu est extrait et transmis au modèle \textbf{GPT-4o} pour classification et assignation automatique.
+    \item Le \textbf{Control Agent} évalue la cohérence du résultat en attribuant un score.
+    \item Si le score dépasse le seuil (6), la tâche est validée et créée sur Trello.
+    \item Sinon, un compteur d’échecs est incrémenté. Au-delà de 5 erreurs, le flux bascule vers une révision manuelle.
+    \item Les cartes validées déclenchent l’envoi d’une notification e-mail au membre assigné.
+\end{itemize}
+
+Le workflow repose sur une architecture modulaire implémentée dans \textbf{n8n}, articulée autour de cinq couches principales :
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{3.5cm}|p{3cm}|p{7cm}|}
+\hline
+\textbf{Couche} & \textbf{Rôle} & \textbf{Description} \\ \hline
+Déclencheur (Gmail Trigger) & Surveillance & Détecte chaque nouvel email entrant dans la boîte support. \\ \hline
+Agent Principal (Main Agent) & Intelligence & Utilise GPT-4 pour analyser le contenu du message, déterminer le type de tâche et proposer une affectation. \\ \hline
+Agent de Contrôle (Control Agent) & Validation & Évalue la qualité de la décision de l’agent principal à l’aide d’un score de confiance. \\ \hline
+Intégration Trello & Exécution & Crée automatiquement la carte Trello correspondante avec les bons labels, priorités et membres assignés. \\ \hline
+Système de Notification et Fallback & Supervision & Envoie des emails de confirmation ou déclenche un processus d’intervention humaine après plusieurs échecs consécutifs. \\ \hline
+\end{tabular}
+\caption{Architecture fonctionnelle du workflow n8n}
+\end{table}
+
+
+
+\subsubsection{Diagramme de séquence} 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1.3]{Conception/Task Prioritization Sequence Diagram.png}
+\caption{Diagramme de séquence : Priorisation et assignation automatique des tâches}
+\end{figure}
+
+\subsection{Technologies Utilisées} 
+
+\begin{itemize}
+    \item \textbf{n8n} : orchestration et automatisation du workflow.
+    \item \textbf{OpenAI GPT-4o} : classification du contenu, détection de la priorité et attribution de la tâche.
+    \item \textbf{Gmail API} : surveillance en temps réel des emails entrants et envoi automatique des notifications.
+    \item \textbf{Trello API} : création et mise à jour des cartes dans les tableaux d’équipe.
+    \item \textbf{JavaScript (Code Node)} : logique métier pour la génération de JSON, le mapping des labels et des membres.
+\end{itemize}
+
+\subsection{Résultats du Workflow}
+
+L’exécution du workflow démontre un avantage majeur pour l’équipe projet.  
+À partir d’un simple email reçu dans la boîte support, l’IA est capable de :
+
+\begin{itemize}
+    \item Analyser automatiquement le contenu pour déterminer le \textbf{type de tâche} (bug, support ou feature).  
+    \item Identifier le \textbf{niveau de priorité} et le \textbf{membre d’équipe} le plus approprié.  
+    \item Créer instantanément une \textbf{carte Trello} dans le tableau du collaborateur concerné.  
+    \item Envoyer une \textbf{notification automatique par email} à la personne assignée, garantissant une prise en charge immédiate.  
+\end{itemize}
+
+Ce workflow apporte une fluidité inédite dans la gestion des demandes, élimine les tâches répétitives de tri et d’affectation, et garantit une répartition équitable et transparente des tâches au sein de l’équipe.  
+
+Les tests réalisés sur 30 échantillons ont montré un \textbf{taux de réussite de 93\%} sur la classification, la priorisation et l’assignation automatiques des tâches.
+\subsection{Importance du cas d’utilisation et améliorations possibles}
+
+Ce cas d’utilisation met en lumière la capacité de l’intelligence artificielle à simplifier et fiabiliser la gestion de projet au quotidien.  
+En associant analyse intelligente, automatisation des décisions et intégration fluide avec les outils collaboratifs, ce workflow illustre comment l’IA peut agir comme un véritable co-pilote opérationnel, accélérant le traitement des demandes et réduisant les risques d’erreur humaine.
+
+Il apporte plusieurs bénéfices tangibles :
+\begin{itemize}
+    \item une \textbf{classification automatique et cohérente} des requêtes issues de différents canaux de communication ;
+    \item une \textbf{réduction notable du temps de traitement} grâce à l’automatisation de l’assignation et du suivi des tâches ;
+    \item une \textbf{amélioration de la traçabilité} et de la réactivité dans la gestion du backlog ;
+    \item une \textbf{intégration transparente} avec les systèmes existants tels que Trello ou Gmail.
+\end{itemize}
+
+Des perspectives d’évolution sont toutefois envisagées pour renforcer la performance et la résilience du système :
+\begin{itemize}
+    \item mise en place d’une \textbf{mémoire contextuelle} (via Notion ou MySQL) pour relier et prioriser les tickets similaires ;
+    \item \textbf{optimisation continue du prompt IA} à partir des historiques réels de tâches et de retours utilisateurs ;
+    \item ajout d’un \textbf{tableau de bord de performance} dans n8n pour le suivi global du flux et des délais ;
+    \item ouverture du workflow à de nouveaux canaux comme \textbf{Slack} ou \textbf{Microsoft Teams}.
+\end{itemize}
+
+Ainsi, ce cas d’utilisation illustre la maturité croissante des solutions d’automatisation intelligentes et leur potentiel à rendre la gestion des tâches plus fluide, proactive et adaptée aux besoins réels des équipes.
+
+\section{Sprint 4 : Transcription intelligente des réunions et extraction automatique des actions}
+
+\subsection{Objectif du sprint}
+
+Dans de nombreuses équipes de développement et de gestion de projet, les réunions représentent une source précieuse d’informations : décisions, tâches, priorités, et dépendances.  
+Cependant, la transcription manuelle et la répartition des actions sont souvent chronophages, sujettes à l’oubli et dépourvues de suivi structuré.
+
+L’objectif de ce use case est de \textbf{concevoir un workflow intelligent d’automatisation des réunions}, capable de :
+
+\begin{enumerate}
+    \item Détecter automatiquement l’ajout d’un nouvel enregistrement audio de réunion sur Google Drive.  
+    \item Transcrire le fichier audio en texte à l’aide d’un modèle de reconnaissance vocale.  
+    \item Extraire automatiquement les décisions, actions et responsables via un modèle de langage (GPT-4).  
+    \item Structurer et distribuer les informations sur plusieurs canaux (Trello, Gmail, Google Docs).  
+    \item Contrôler la qualité des résultats et gérer les erreurs via un système d’intervention manuelle.
+\end{enumerate}
+
+L’ambition du projet est d’éliminer la perte d’informations après les réunions et d’assurer une distribution fiable et immédiate des tâches à l’ensemble de l’équipe.
+
+\subsection{Backlog du sprint}
+\begin{longtable}{|m{0.6cm}|m{2.7cm}|m{4.5cm}|m{1.8cm}|m{6cm}|}
+\hline
+\textbf{Id} & \textbf{Fonctionnalité} & \textbf{User Story} & \textbf{Estimation (J)} & \textbf{Tâches} \\
+\hline
+\endhead
+\hline
+4
+& Transcription et extraction automatiques des réunions
+& En tant que chef d’équipe, je souhaite que les fichiers audio des réunions sur Google Drive soient automatiquement transcrits et transformés en actions concrètes, afin de faciliter le suivi et la répartition des tâches.
+& 30
+& - Activer le \textbf{Google Drive Trigger} pour détecter les nouveaux fichiers audio. 
+\newline - Télécharger le fichier via \textbf{File Download}. 
+\newline - Transcrire l’audio avec \textbf{Whisper}. 
+\newline - Envoyer la transcription à \textbf{GPT-4} pour extraire résumé, décisions et actions. 
+\newline - Évaluer la qualité avec un \textbf{Control Agent} (score 0–10). 
+\newline - Appliquer la logique conditionnelle :
+  \newline \hspace*{0.5cm} • Score ≥ 6 → distribution. 
+  \newline \hspace*{0.5cm} • Score < 6 → retry. 
+\newline - Gérer les retries (max 5) puis alerte manuelle. 
+\newline - Créer les cartes \textbf{Trello} (assignations et priorités). 
+\newline - Mettre à jour le \textbf{Google Docs} du compte rendu. 
+\newline - Envoyer les \textbf{emails} de notification. 
+\newline - Tester le flux complet de bout en bout. \\
+\hline
+\caption{Backlog du Sprint 4 – Transcription et Extraction Intelligente des Réunions}
+\end{longtable}
+
+
+\subsection{Diagrammes dynamiques}
+
+\subsubsection{Diagramme d’activité}
+
+Le diagramme d’activité du sprint 4 illustre le flux complet d’automatisation du processus de transcription intelligente des réunions et d’extraction des actions à partir de fichiers audio stockés sur Google Drive.
+Chaque étape est orchestrée via un workflow intelligent intégrant le modèle \textbf{OpenAI Whisper} pour la transcription, le modèle \textbf{GPT-4} pour l’extraction de contenu structuré, et des connecteurs vers \textbf{Google Drive}, \textbf{Trello}, \textbf{Google Docs}, et \textbf{Gmail}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{Conception/Smart Meeting Transcriptions Activity diagram.png}
+\caption{Diagramme d'activité : Transcription intelligente des réunions et extraction automatique des actions}
+\end{figure}
+
+\textbf{Description du flux :}
+\begin{itemize}
+\item Le processus débute par la détection automatique d’un nouveau fichier audio dans un dossier Google Drive surveillé.
+\item Le fichier est ensuite téléchargé pour traitement local par le workflow.
+\item Le modèle \textbf{Whisper} réalise la transcription audio en texte.
+\item Le texte transcrit est analysé par le modèle \textbf{GPT-4} afin d’extraire :
+\begin{itemize}
+\item un résumé de la réunion,
+\item les décisions prises,
+\item les actions à entreprendre (avec assignations et échéances),
+\item et le niveau de priorité associé.
+\end{itemize}
+\item Un \textbf{Control Agent} évalue la qualité de l’extraction et attribue un score de validation.
+\item Si le score est supérieur ou égal à 6, les informations sont validées et distribuées sur les différentes plateformes :
+\begin{itemize}
+\item création automatique de cartes Trello pour les actions,
+\item mise à jour d’un document Google Docs,
+\item envoi d’e-mails aux membres assignés.
+\end{itemize}
+\item Si le score est inférieur à 6, un compteur d’échecs est incrémenté et le processus retente l’extraction jusqu’à 5 fois.
+\item En cas d’échec persistant (≥ 6 erreurs), une notification de \textbf{révision manuelle} est envoyée à l’administrateur.
+\end{itemize}
+
+\subsubsection{Diagramme de séquence} 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{Conception/Smart Meeting Transcription Sequence Diagram.png}
+\caption{Diagramme de séquence : Transcription intelligente des réunions et extraction automatique des actions}
+\end{figure}
+
+\subsection{Architecture du Workflow}
+
+Le workflow a été implémenté dans \textbf{n8n} et repose sur une architecture modulaire intégrant plusieurs services cloud et API.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{3.5cm}|p{3cm}|p{7cm}|}
+\hline
+\textbf{Composant} & \textbf{Rôle} & \textbf{Description} \\ \hline
+Google Drive Trigger & Déclencheur & Surveille le dossier partagé pour détecter les nouveaux fichiers audio de réunion. \\ \hline
+Whisper (OpenAI) & Transcription & Convertit automatiquement les fichiers audio (MP3, WAV, M4A, FLAC) en texte. \\ \hline
+GPT-4 (OpenAI) & Extraction Sémantique & Analyse la transcription pour en extraire un résumé, les décisions, les actions, les responsables et les échéances. \\ \hline
+Control Agent & Validation & Évalue la qualité du JSON généré selon un score (0 à 10). Si le score est inférieur à 6, le workflow relance une nouvelle extraction. \\ \hline
+Google Docs API & Documentation & Met à jour un document partagé contenant les comptes rendus et décisions de réunion. \\ \hline
+Trello API & Distribution & Crée automatiquement les cartes Trello avec les bonnes priorités, membres assignés et dates d’échéance. \\ \hline
+Gmail API & Notification & Envoie à chaque membre un email personnalisé contenant les actions qui lui sont attribuées. \\ \hline
+\end{tabular}
+\caption{Architecture fonctionnelle du workflow Smart Meeting Transcriptions \& Action Item Extraction}
+\end{table}
+
+
+\subsection{Technologies Utilisées}
+
+\begin{itemize}
+    \item \textbf{n8n} : orchestrateur principal pour l’automatisation du processus.
+    \item \textbf{OpenAI Whisper} : transcription audio vers texte haute précision.
+    \item \textbf{GPT-4} : extraction sémantique des décisions, actions et responsables.
+    \item \textbf{Google Drive API} : détection automatique des fichiers audio ajoutés.
+    \item \textbf{Google Docs API} : génération et mise à jour automatique du compte rendu.
+    \item \textbf{Trello API} : création des cartes de tâches et mise à jour du suivi projet.
+    \item \textbf{Gmail API} : envoi des notifications aux membres de l’équipe.
+    \item \textbf{JavaScript (Code Nodes)} : logique de transformation du JSON, mapping des labels et des identifiants Trello.
+\end{itemize}
+
+\subsection{Résultats du Workflow}
+
+Bien que la phase d’évaluation quantitative soit encore en cours, l’analyse fonctionnelle démontre un avantage considérable pour l’équipe projet.  
+Grâce à ce workflow, le cycle complet d’une réunion devient entièrement automatisé :
+
+\begin{itemize}
+    \item L’IA transcrit et analyse automatiquement les enregistrements audio déposés sur Google Drive.  
+    \item Les décisions et tâches identifiées sont immédiatement converties en cartes Trello, assignées aux bons collaborateurs.  
+    \item Chaque membre d’équipe reçoit un \textbf{email de notification personnalisé} résumant ses actions à réaliser.  
+    \item Un document Google Docs centralise automatiquement l’ensemble des comptes rendus et décisions.  
+\end{itemize}
+
+Ainsi, à partir d’un simple fichier audio, la coordination entre les membres est assurée sans intervention humaine, garantissant une exécution fluide et une traçabilité complète des réunions.  
+
+Les tests effectués sur 30 échantillons ont montré un \textbf{taux de réussite de 100\%} sur la transcription, l’extraction et la distribution automatique des actions issues des réunions.
+
+\subsection{Importance du cas d’utilisation et améliorations possibles}
+
+Ce cas d’utilisation illustre parfaitement comment l’intelligence artificielle peut transformer la gestion de la connaissance en entreprise.  
+En combinant la transcription automatique, l’extraction sémantique et la distribution multicanale, le workflow optimise la valorisation des réunions et facilite la conversion des échanges oraux en actions concrètes, mesurables et traçables.
+
+Il met en évidence plusieurs apports majeurs :
+\begin{itemize}
+    \item la \textbf{réduction des tâches répétitives} grâce à l’automatisation complète du traitement des réunions ;
+    \item la \textbf{fiabilité documentaire} à travers la normalisation des comptes rendus et la centralisation des décisions ;
+    \item la \textbf{fluidité de collaboration} entre les pôles techniques, produits et support ;
+    \item et la \textbf{réactivité accrue} dans le suivi des actions et l’exécution des priorités.
+\end{itemize}
+
+Des perspectives d’amélioration sont néanmoins envisagées pour renforcer la robustesse et l’adaptabilité du système :
+\begin{itemize}
+    \item amélioration du traitement audio pour une meilleure précision en cas de bruit ou de chevauchement de voix ;
+    \item enrichissement du prompt afin de mieux interpréter les formulations implicites ou informelles ;
+    \item mise en place d’un tableau de bord centralisé (Notion, Airtable ou interface n8n) pour le suivi global des réunions ;
+    \item extension linguistique vers d’autres langues, notamment le dialecte tunisien, pour une adoption locale plus fluide ;
+    \item ajout d’un module de visualisation des décisions et dépendances, ainsi qu’un mécanisme de feedback pour affiner continuellement la précision des extractions.
+\end{itemize}
+
+Ainsi, ce cas d’utilisation démontre la capacité de l’IA à faire évoluer la documentation d’entreprise d’un simple support d’information vers un véritable outil de pilotage collaboratif et stratégique.
+
+\section{Sprint 5 : Vérification automatique de la conformité des projets}
+
+\subsection{Objectif du sprint}
+
+Dans un contexte de développement logiciel complexe impliquant plusieurs équipes (Frontend, Backend, QA, DevOps et AI/ML), la vérification de la conformité des projets constitue un enjeu majeur.  
+Les écarts entre les spécifications initiales et les implémentations réelles peuvent entraîner des retards, des incohérences techniques et une perte de qualité globale du produit.
+
+L’objectif de ce use case est de \textbf{concevoir un workflow automatisé de vérification de conformité des projets}, capable de :
+
+\begin{enumerate}
+    \item Comparer automatiquement les \textbf{exigences fonctionnelles} aux \textbf{implémentations réelles} fournies par chaque équipe.  
+    \item Identifier les écarts tels que les fonctionnalités manquantes, dupliquées, ou mal attribuées à une équipe.  
+    \item Générer un \textbf{rapport de conformité structuré} indiquant les statuts de chaque fonctionnalité : \texttt{matched}, \texttt{missing}, \texttt{duplicated}, \texttt{team\_mismatch}.  
+    \item Envoyer automatiquement les rapports aux chefs d’équipe concernés pour correction.  
+    \item Archiver les résultats dans une base documentaire pour suivi et amélioration continue.
+\end{enumerate}
+
+Ce système vise à automatiser le contrôle qualité inter-équipes et à réduire le temps d’audit de conformité de plusieurs heures à quelques minutes.
+
+
+\subsection{Backlog du sprint}
+
+\begin{longtable}{|m{0.6cm}|m{2.7cm}|m{4.5cm}|m{1.8cm}|m{6cm}|}
+\hline
+\textbf{Id} & \textbf{Fonctionnalité} & \textbf{User Story} & \textbf{Estimation (J)} & \textbf{Tâches} \\
+\hline
+\endhead
+\hline
+5
+& Vérification automatique de la conformité inter-équipes
+& En tant que chef de projet, je souhaite automatiser la comparaison entre les fonctionnalités prévues et les rapports d’équipes afin de détecter les écarts, doublons et erreurs d’affectation, et générer un rapport consolidé.
+& 30
+& - Configurer le \textbf{noeud Google Drive} pour rechercher les rapports projet. 
+\newline - Télécharger les fichiers via \textbf{File Download}. 
+\newline - Traiter plusieurs formats (PDF, DOCX, XLSX) via les nœuds d’extraction adaptés. 
+\newline - Fusionner les textes extraits et préparer les listes de fonctionnalités. 
+\newline - Envoyer les données au modèle \textbf{GPT-4o-mini} pour l’analyse de conformité. 
+\newline - Parser et valider la réponse JSON. 
+\newline - Calculer les écarts et générer le rapport de conformité. 
+\newline - Envoyer automatiquement le rapport par e-mail au chef de projet. 
+\newline - Tester le flux complet sur différents formats et cas d’erreur. \\
+\hline
+\caption{Backlog du Sprint 5 – Vérification automatique de la conformité des projets}
+\end{longtable}
+
+\subsection{Diagrammes dynamiques}
+
+\subsubsection{Diagramme d’activité}
+
+Le diagramme d’activité du sprint 5 illustre le flux complet d’automatisation du processus de \textbf{vérification de la conformité des projets} à partir des rapports d’équipes et du programme principal.  
+Chaque étape est orchestrée via un workflow intelligent intégrant le modèle \textbf{GPT-4o} pour l’analyse de conformité, des modules de traitement de texte et de génération de rapports HTML, ainsi que des connecteurs \textbf{Google Drive} et \textbf{Gmail} pour la collecte et la diffusion des résultats.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{Conception/Project Compliance Activity diagram.png}
+\caption{Diagramme d'activité : Vérification automatique de la conformité des projets}
+\end{figure}
+
+\textbf{Description du flux :}
+\begin{itemize}
+\item Le processus débute par la recherche des fichiers de spécifications provenant du \textbf{programme principal} et des cinq équipes (\textbf{Frontend}, \textbf{Backend}, \textbf{DevOps}, \textbf{AI/ML} et \textbf{QA}) dans un dossier Google Drive.
+\item Chaque fichier est lu et son contenu extrait sous forme de texte brut.
+\item Les rapports des différentes équipes sont ensuite \textbf{fusionnés en un seul document consolidé}.
+\item Le modèle \textbf{GPT-4o} compare les fonctionnalités prévues dans le programme principal avec celles réellement implémentées dans les rapports d’équipes.
+\item Le modèle identifie :
+\begin{itemize}
+\item les fonctionnalités validées (correctement implémentées),
+\item les fonctionnalités manquantes,
+\item les doublons (implémentées par plusieurs équipes),
+\item et les incohérences d’affectation d’équipe.
+\end{itemize}
+\item Le résultat est ensuite \textbf{nettoyé et parsé} pour obtenir un JSON valide.
+\item Un module de \textbf{génération de rapport} compile les résultats sous forme de rapport HTML et texte, incluant :
+\begin{itemize}
+\item le score global de conformité,
+\item les erreurs détectées,
+\item et la répartition des fonctionnalités valides par équipe.
+\end{itemize}
+\item Enfin, le rapport est automatiquement exporté et diffusé (via Google Drive ou e-mail) aux responsables concernés.
+\end{itemize}
+
+\subsubsection{Diagramme de séquence} 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1.3]{Conception/Project Compliance Sequence Diagram1.png}
+\caption{Diagramme de séquence : Vérification automatique de la conformité des projets}
+\end{figure}
+
+\subsection{Architecture du Workflow}
+
+Le workflow est implémenté dans \textbf{n8n} et s’appuie sur une série d’agents intelligents pour orchestrer l’analyse de conformité.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{3.5cm}|p{3cm}|p{7cm}|}
+\hline
+\textbf{Composant} & \textbf{Rôle} & \textbf{Description} \\ \hline
+Google Drive Trigger & Déclencheur & Surveille l’ajout de rapports d’équipes et du programme principal dans un dossier dédié. \\ \hline
+Data Preparation Node & Prétraitement & Regroupe les documents textuels et les prépare pour l’analyse. \\ \hline
+GPT-4 Agent & Analyse IA & Compare le contenu du programme principal et des rapports d’équipe, puis génère un JSON structuré des écarts détectés. \\ \hline
+Control Agent & Validation & Évalue la cohérence du JSON selon un score (0–10) et relance une réévaluation si nécessaire. \\ \hline
+Report Generator & Génération de Rapport & Formate les résultats dans un fichier Google Docs lisible par les chefs d’équipes. \\ \hline
+Notification Node (Gmail) & Communication & Envoie automatiquement les rapports de conformité aux équipes responsables. \\ \hline
+Archive Node (Drive/Notion) & Historisation & Archive les rapports de conformité pour assurer la traçabilité et l’amélioration continue. \\ \hline
+\end{tabular}
+\caption{Architecture fonctionnelle du workflow Project Compliance Checker}
+\end{table}
+
+
+\subsection{Technologies Utilisées}
+
+\begin{itemize}
+    \item \textbf{n8n} : orchestrateur principal du workflow d’analyse.  
+    \item \textbf{OpenAI GPT-4o} : comparaison sémantique entre les fonctionnalités prévues et implémentées.  
+    \item \textbf{Google Drive API} : gestion des fichiers sources (rapports et programme principal).  
+    \item \textbf{Gmail API} : envoi automatisé des rapports de conformité.  
+    \item \textbf{Google Docs} : génération et diffusion des rapports lisibles.  
+    \item \textbf{JavaScript (Code Node)} : logique de validation et gestion du scoring.  
+    \item \textbf{Notion API} : optionnelle, pour le stockage et le suivi historique des conformités.  
+\end{itemize}
+
+\subsection{Résultats du Workflow}
+
+Le workflow a démontré une forte valeur ajoutée dans la coordination inter-équipes.  
+Grâce à l’automatisation, chaque dépôt de rapport déclenche une vérification complète et un retour immédiat :
+
+\begin{itemize}
+    \item Les écarts entre le programme principal et les implémentations sont détectés en quelques secondes.  
+    \item Chaque chef d’équipe reçoit un \textbf{rapport clair et détaillé} indiquant les points à corriger.  
+    \item Le suivi des versions et de la conformité devient totalement traçable dans le temps.  
+\end{itemize}
+
+Ce système permet une transparence accrue, réduit les frictions entre les équipes et renforce la qualité globale du produit.
+\subsection{Importance du cas d’utilisation et améliorations possibles}
+
+Ce cas d’utilisation met en évidence la contribution essentielle de l’intelligence artificielle et de l’automatisation dans le contrôle qualité des projets logiciels.  
+En s’appuyant sur les capacités d’analyse sémantique des modèles de langage et sur la flexibilité d’orchestration offerte par n8n, ce workflow permet d’accélérer les vérifications de conformité tout en renforçant la cohérence inter-équipes.
+
+Les principaux apports se traduisent par :
+\begin{itemize}
+    \item une \textbf{réduction significative du temps d’audit} et des efforts de vérification manuelle ;
+    \item une \textbf{meilleure communication entre les équipes} grâce à une centralisation claire des écarts et points d’attention ;
+    \item la création d’une \textbf{base de connaissance dynamique} autour de la conformité technique et fonctionnelle.
+\end{itemize}
+
+Plusieurs pistes d’évolution visent à enrichir ce dispositif et à le rendre encore plus opérationnel :
+\begin{itemize}
+    \item intégration directe avec les plateformes de gestion de code (\textbf{GitHub}, \textbf{GitLab}) pour corréler les commits et les exigences du programme principal ;
+    \item exploitation de modèles d’IA spécialisés dans l’analyse de code (tels que \textbf{CodeLlama} ou \textbf{Claude Code}) pour une interprétation plus fine des rapports d’équipes ;
+    \item développement d’un \textbf{tableau de bord interactif} (Airtable ou Notion) pour suivre en temps réel les taux de conformité par fonctionnalité ou par équipe.
+\end{itemize}
+
+Ainsi, ce cas d’utilisation s’inscrit dans une démarche d’amélioration continue de la qualité logicielle, en posant les bases de pipelines d’audit intelligents, adaptatifs et intégrés aux outils modernes de développement.
+
+\section*{Conclusion}
+
+Cette deuxième release a démontré l’impact concret de l’automatisation intelligente dans la gestion de projet.
+Les trois use cases développés ont permis de simplifier la planification, le suivi et le contrôle des livrables grâce à l’intégration de n8n, GPT-4 et Whisper.
+Les workflows conçus ont amélioré la répartition des tâches, la qualité du reporting et la cohérence inter-équipes, confirmant la valeur ajoutée de l’IA dans l’organisation et la supervision des projets.
